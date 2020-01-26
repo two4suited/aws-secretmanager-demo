@@ -21,6 +21,7 @@ namespace RetrieveSecrets
             var services = new ServiceCollection();
 
             services.AddSingleton<IAmazonSecretsManager, AmazonSecretsManagerClient>();
+            services.AddSingleton<ISecretManager, SecretManager>();
             
             services.AddLogging(x =>
             {

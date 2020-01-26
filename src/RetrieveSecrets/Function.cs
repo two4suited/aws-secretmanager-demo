@@ -34,19 +34,9 @@ namespace RetrieveSecrets
         }
         public string FunctionHandler(object input, ILambdaContext context)
         {
-            string secretName = "DemoSecret";
-            var client = _serviceProvider.GetService<IAmazonSecretsManager>();
-
-            GetSecretValueRequest request = new GetSecretValueRequest
-            {
-                SecretId = secretName
-            };
-          
-            var response = client.GetSecretValueAsync(request).Result;
-
-            var secrets = JsonConvert.DeserializeObject<AppSecrets>(response.SecretString);
-
-            return secrets.password;
+            var secrets = _serviceProvider.GetService<ISecretManager>();
+            var config = secrets.RetrieveSecrets();
+            return config.password;
         }
     }
 }

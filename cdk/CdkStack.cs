@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Amazon.CDK;
+using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.S3;
 using Amazon.CDK.AWS.SecretsManager;
 using Amazon.CDK.AWS.Lambda;
@@ -32,8 +33,15 @@ namespace Cdk
                 FunctionName = "SecretDemoFunction"
             });
 
-            secret.GrantRead(lambda);
-
+            var role = lambda.Role;
+            var statement = new PolicyStatement(new PolicyStatementProps()
+            {
+                Resources = new [] { secret.SecretArn},
+                Effect = Effect.ALLOW,
+                Actions = new [] { "secretsmanager:GetSecretValue","secretsmanager:DescribeSecret" }
+            });
+            
+            role.AddToPolicy(statement);
         }
     }
 }

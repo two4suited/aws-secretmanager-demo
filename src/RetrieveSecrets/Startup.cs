@@ -1,4 +1,5 @@
 using System.IO;
+using Amazon.SecretsManager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,8 +19,8 @@ namespace RetrieveSecrets
         private static IServiceCollection ConfigureServices(IConfigurationRoot root)
         {
             var services = new ServiceCollection();
-            
-            
+
+            services.AddSingleton<IAmazonSecretsManager, AmazonSecretsManagerClient>();
             
             services.AddLogging(x =>
             {

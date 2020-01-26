@@ -26,6 +26,7 @@ namespace Cdk
             {
                 Runtime = Runtime.DOTNET_CORE_2_1,
                 Timeout = Duration.Minutes(1),
+                MemorySize = 512,
                 Handler = "RetrieveSecrets::RetrieveSecrets.Function::FunctionHandler",
                 Code = Code.FromAsset("../src/RetrieveSecrets/bin/Debug/netcoreapp2.1/publish"),
                 FunctionName = "SecretDemoFunction"

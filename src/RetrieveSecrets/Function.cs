@@ -5,9 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amazon;
 using Amazon.Lambda.Core;
+using Amazon.Lambda.Serialization.Json;
 using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
@@ -34,8 +36,7 @@ namespace RetrieveSecrets
         {
             string secretName = "DemoSecret";
             string region = "us-west-2";
-            //string secret = "username";
-
+      
             MemoryStream memoryStream = new MemoryStream();
 
             IAmazonSecretsManager client = new AmazonSecretsManagerClient(RegionEndpoint.GetBySystemName(region));
@@ -48,7 +49,9 @@ namespace RetrieveSecrets
 
             response = client.GetSecretValueAsync(request).Result;
 
-            return response.SecretString;
+            var secrets = JsonConvert.DeserializeObject<AppSecrets>(response.SecretString);
+
+            return secrets.password;
         }
     }
 }

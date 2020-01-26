@@ -35,19 +35,14 @@ namespace RetrieveSecrets
         public string FunctionHandler(object input, ILambdaContext context)
         {
             string secretName = "DemoSecret";
-            string region = "us-west-2";
-      
-            MemoryStream memoryStream = new MemoryStream();
+            var client = _serviceProvider.GetService<IAmazonSecretsManager>();
 
-            IAmazonSecretsManager client = new AmazonSecretsManagerClient(RegionEndpoint.GetBySystemName(region));
-
-            GetSecretValueRequest request = new GetSecretValueRequest();
-            request.SecretId = secretName;
-            request.VersionStage = "AWSCURRENT"; // VersionStage defaults to AWSCURRENT if unspecified.
-
-            GetSecretValueResponse response = null;
-
-            response = client.GetSecretValueAsync(request).Result;
+            GetSecretValueRequest request = new GetSecretValueRequest
+            {
+                SecretId = secretName
+            };
+          
+            var response = client.GetSecretValueAsync(request).Result;
 
             var secrets = JsonConvert.DeserializeObject<AppSecrets>(response.SecretString);
 

@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Amazon.SecretsManager;
 using Microsoft.Extensions.Configuration;
@@ -8,7 +9,9 @@ namespace RetrieveSecrets
 {
     public static class Startup
     {
-        public static IServiceCollection Container => ConfigureServices(Configuration); 
+        private static IServiceCollection Container => ConfigureServices(Configuration);
+
+        public static IServiceProvider Provider => ConfigureProvider(Container); 
                
         private static IConfigurationRoot Configuration => new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
@@ -22,7 +25,16 @@ namespace RetrieveSecrets
 
             services.AddSingleton<IAmazonSecretsManager, AmazonSecretsManagerClient>();
             services.AddSingleton<ISecretManager, SecretManager>();
+            services.AddSingleton<IApplicationService,ApplicationService>();
+
+            services.AddSingleton(provider =>
+            {
+                var secrets = provider.GetService<ISecretManager>();
+                var config = secrets.RetrieveSecrets();
+                return config;
+            });
             
+
             services.AddLogging(x =>
             {
                 x.AddConsole();
@@ -31,7 +43,11 @@ namespace RetrieveSecrets
             });
            
             return services;
-        
+        }
+
+        private static IServiceProvider ConfigureProvider(IServiceCollection serviceCollection)
+        {   
+            return Container.BuildServiceProvider();
         }
     }
 }

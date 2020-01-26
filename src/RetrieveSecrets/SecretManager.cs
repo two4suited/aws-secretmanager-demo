@@ -6,15 +6,18 @@ using Newtonsoft.Json;
 
 namespace RetrieveSecrets
 {
+    public interface ISecretManager
+    {
+        AppSecrets RetrieveSecrets();
+    }
+    
     public class SecretManager : ISecretManager,IDisposable
     {
-        private readonly IAmazonSecretsManager _amazonSecretsManager;
         private readonly SecretsManagerCache _cache;
 
         public SecretManager(IAmazonSecretsManager amazonSecretsManager)
         {
-            _amazonSecretsManager = amazonSecretsManager;
-            _cache = new SecretsManagerCache(_amazonSecretsManager);
+            _cache = new SecretsManagerCache(amazonSecretsManager);
         }
         public AppSecrets RetrieveSecrets()
         {
@@ -29,7 +32,7 @@ namespace RetrieveSecrets
 
         public void Dispose()
         {
-            _amazonSecretsManager?.Dispose();
+            _cache?.Dispose();
         }
     }
 }

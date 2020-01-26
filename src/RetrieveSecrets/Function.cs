@@ -27,16 +27,13 @@ namespace RetrieveSecrets
             _serviceProvider = serviceProvider;
         }
 
-        public Function() 
+        public Function() : this(Startup.Provider)
         {
-            _serviceProvider = Startup.Container.BuildServiceProvider();
-
         }
         public string FunctionHandler(object input, ILambdaContext context)
         {
-            var secrets = _serviceProvider.GetService<ISecretManager>();
-            var config = secrets.RetrieveSecrets();
-            return config.password;
+            var service = _serviceProvider.GetService<IApplicationService>();
+            return service.Combine();
         }
     }
 }
